@@ -15,15 +15,55 @@
 namespace lockfree
 {
     template<class value_type>
-    struct alignas(64) slot{
-        
+    struct alignas(64) slot
+    {
         std::atomic<size_t> seq;
-
     private:
         // Reserve memory for value
         alignas(value_type) std::byte stroage[sizeof(value_type)];
-        // Value object constructed flag
-        bool constructed = false;
+        // Value status flag
+        bool constructed;
+
+    public:
+        /**
+         * @brief Default constructor
+         * 
+         */
+        slot() noexcept : seq(0), constructed(false){}
+
+        /// You don't want to move a slot in multithread queue. ///
+        slot(const slot&)            = delete;
+        slot(slot&&)                 = delete;
+        slot& operator=(const slot&) = delete;
+        slot& operator=(slot&&)      = delete;
+
+        /**
+         * @brief Late construct the value_type object at push
+         * 
+         * @tparam Args Parameter pack type
+         * @param args Forwarding value
+         */
+        template<typename... Args>
+        void construct(Args&&... args) 
+        {
+            //Placement new with forwarding
+            new (&storage) value_type(std::forward<Args>(args)...);
+            constructed = true;
+        }
+
+        /**
+         * @brief Destroy a element at pop
+         * 
+         */
+        void destroy() noexcept 
+        {
+            if (constructed) 
+            {
+                reinterpret_cast<value_type*>(&storage)->~value_type();
+                constructed = false;
+            }
+        }
+
     };
 
 }
