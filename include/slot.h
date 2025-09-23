@@ -73,6 +73,27 @@ namespace lockfree
         {
             seq.store(new_seq, std::memory_order_release);
         }
+
+        /**
+         * @brief get for write
+         * 
+         * @return value_type& Reference of stored value
+         */
+        auto get() noexcept -> value_type& 
+        { 
+            return *reinterpret_cast<value_type*>(&storage); 
+        }
+        
+        /**
+         * @brief Read only get
+         * 
+         * @return const value_type& const reference of stored value
+         */
+        auto get() const noexcept -> const value_type&
+        { 
+            return *reinterpret_cast<const value_type*>(&storage); 
+        }
+
     };
 }
  
