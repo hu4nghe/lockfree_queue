@@ -20,7 +20,7 @@ namespace lockfree
         std::atomic<size_t> seq;
     private:
         // Reserve memory for value
-        alignas(value_type) std::byte stroage[sizeof(value_type)];
+        alignas(value_type) std::byte storage[sizeof(value_type)];
         // Value status flag
         bool constructed;
 
@@ -63,7 +63,6 @@ namespace lockfree
                 constructed = false;
             }
         }
-
     };
 
 }
