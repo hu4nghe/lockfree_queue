@@ -63,7 +63,16 @@ namespace lockfree
                 constructed = false;
             }
         }
+        
+        /**
+         * @brief reset slot sequence number
+         * 
+         * @param new_seq new sequence number value
+         */
+        void reset_seq(size_t new_seq) noexcept 
+        {
+            seq.store(new_seq, std::memory_order_release);
+        }
     };
-
 }
  
