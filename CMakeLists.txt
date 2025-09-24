@@ -23,3 +23,10 @@ FetchContent_Declare(
   GIT_TAG        v3.10.0
 )
 FetchContent_MakeAvailable(Catch2)
+
+enable_testing()  
+
+add_executable(lockfree-queue-tests tests/test_basic.cpp)
+target_link_libraries(lockfree-queue-tests PRIVATE lockfree_queue Catch2::Catch2WithMain)
+
+add_test(NAME LockfreeQueueTests COMMAND lockfree-queue-tests)
