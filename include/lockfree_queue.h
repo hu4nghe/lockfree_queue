@@ -73,7 +73,7 @@ namespace lockfree
         {
             // Destroy any remaining items
             value_type tmp;
-            while(try_pop(tmp)){}
+            while(dequeue(tmp)){}
         }
         /**
          * @brief Try to enqueue a new element by constructing in place.
