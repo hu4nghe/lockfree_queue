@@ -16,6 +16,8 @@
 #include <bit>
 #include <vector>
 
+#include <print>
+
 namespace lockfree
 {   
     template<class value_type>
@@ -24,10 +26,10 @@ namespace lockfree
     private:
         using slot_type = slot<value_type>;
         using size_type = std::size_t;
-
-        std::vector<slot_type>  buffer;
+        
         size_type               capacity;
         size_type               mask;
+        std::vector<slot_type>  buffer;
 
         alignas(64) std::atomic<size_type> head;
         alignas(64) std::atomic<size_type> tail;
@@ -59,6 +61,14 @@ namespace lockfree
                 head    (0),
                 tail    (0)
         {
+            std::print("sizeof(size_type) = {}\n", sizeof(size_type));
+            std::print("requested = {}\n", requested);
+            auto bc = std::bit_ceil(requested);
+            std::print("bit_ceil(requested) = {}\n", bc);
+            auto cap = std::max<size_type>(2, bc);
+            std::print("capacity = {}\n", cap);
+
+            std::print("requested capacity : {}\ntrue capacity : {}\n",requested, capacity);
             for(auto i = 0; i < capacity; i++)
                 buffer[i].reset_seq(i);
         }
@@ -125,7 +135,7 @@ namespace lockfree
                 slot_type& current_slot = buffer[head & mask];
                 size_type  current_seq  = current_slot.seq.load(std::memory_order_acquire);
 
-                auto cmp = (std::intptr_t)current_seq <=> (std::intptr_t)current_head;
+                auto cmp = (std::intptr_t)current_seq <=> (std::intptr_t)current_head + 1;
 
                 if (cmp == 0) 
                 {
