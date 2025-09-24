@@ -16,17 +16,27 @@ target_compile_features(lockfree_queue INTERFACE cxx_std_23)
 
 # Test
 
-include(FetchContent)
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.10.0
+# Find or fetch Catch2
+find_package(Catch2 3 QUIET)
+if(NOT Catch2_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v3.10.0
+    )
+    FetchContent_MakeAvailable(Catch2)
+endif()
+ 
+
+add_executable(basic_test tests/test_basic.cpp)
+target_include_directories(basic_test
+  PRIVATE
+    ${catch2_SOURCE_DIR}/src
 )
-FetchContent_MakeAvailable(Catch2)
+target_link_libraries(basic_test PRIVATE lockfree_queue Catch2::Catch2WithMain)
 
-enable_testing()  
-
-add_executable(lockfree-queue-tests tests/test_basic.cpp)
-target_link_libraries(lockfree-queue-tests PRIVATE lockfree_queue Catch2::Catch2WithMain)
-
-add_test(NAME LockfreeQueueTests COMMAND lockfree-queue-tests)
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+include(CTest)
+include(Catch)
+catch_discover_tests(basic_test)
