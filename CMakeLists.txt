@@ -28,15 +28,20 @@ if(NOT Catch2_FOUND)
     FetchContent_MakeAvailable(Catch2)
 endif()
  
-
-add_executable(basic_test tests/test_basic.cpp)
-target_include_directories(basic_test
+# basic tests
+add_executable(basic tests/test_basic.cpp)
+target_include_directories(basic
   PRIVATE
     ${catch2_SOURCE_DIR}/src
 )
-target_link_libraries(basic_test PRIVATE lockfree_queue Catch2::Catch2WithMain)
+target_link_libraries(basic PRIVATE lockfree_queue Catch2::Catch2WithMain)
+
+# ABA test
+add_executable(ABA tests/test_ABA.cpp)
+target_link_libraries(ABA PRIVATE lockfree_queue Catch2::Catch2WithMain)
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
-catch_discover_tests(basic_test)
+catch_discover_tests(basic)
+catch_discover_tests(ABA)
