@@ -27,7 +27,7 @@ namespace lockfree
 
         std::vector<slot_type>  buffer;
         size_type               capacity;
-        size_type               musk;
+        size_type               mask;
 
         alignas(64) std::atomic<size_type> head;
         alignas(64) std::atomic<size_type> tail;
@@ -54,7 +54,7 @@ namespace lockfree
          */
         explicit queue(size_type requested)
             :   capacity(std::max<size_type>(2, std::bit_ceil(requested))),
-                musk    (capacity - 1),
+                mask    (capacity - 1),
                 buffer  (capacity),
                 head    (0),
                 tail    (0)
@@ -88,7 +88,7 @@ namespace lockfree
             while(true)
             {
                 size_type  current_tail = tail.load(std::memory_order_relaxed);
-                slot_type& current_slot = buffer[current_tail & musk];
+                slot_type& current_slot = buffer[current_tail & mask];
                 size_type  current_seq  = current_slot.seq.load(std::memory_order_acquire);
                 
                 auto cmp = (std::intptr_t)current_seq <=> (std::intptr_t)current_tail;
@@ -122,7 +122,7 @@ namespace lockfree
             while(true)
             {
                 size_type  current_head = head.load(std::memory_order_relaxed);
-                slot_type& current_slot = buffer[head & musk];
+                slot_type& current_slot = buffer[head & mask];
                 size_type  current_seq  = current_slot.seq.load(std::memory_order_acquire);
 
                 auto cmp = (std::intptr_t)current_seq <=> (std::intptr_t)current_head;
