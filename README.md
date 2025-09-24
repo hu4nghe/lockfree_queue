@@ -42,7 +42,7 @@ find_package(lockfree_queue REQUIRED CONFIG
 target_link_libraries(myapp INTERFACE lockfree_queue::lockfree_queue)
 ```
 
-Build with tests
+### *Build with tests
 ```sh
 cmake -S . -B build -Dbuild_tests=ON
 
