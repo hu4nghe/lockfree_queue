@@ -61,14 +61,6 @@ namespace lockfree
                 head    (0),
                 tail    (0)
         {
-            std::print("sizeof(size_type) = {}\n", sizeof(size_type));
-            std::print("requested = {}\n", requested);
-            auto bc = std::bit_ceil(requested);
-            std::print("bit_ceil(requested) = {}\n", bc);
-            auto cap = std::max<size_type>(2, bc);
-            std::print("capacity = {}\n", cap);
-
-            std::print("requested capacity : {}\ntrue capacity : {}\n",requested, capacity);
             for(auto i = 0; i < capacity; i++)
                 buffer[i].reset_seq(i);
         }
