@@ -13,3 +13,13 @@ target_include_directories(lockfree_queue
 )
 
 target_compile_features(lockfree_queue INTERFACE cxx_std_23)
+
+# Test
+
+include(FetchContent)
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.10.0
+)
+FetchContent_MakeAvailable(Catch2)
