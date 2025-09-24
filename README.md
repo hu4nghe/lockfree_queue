@@ -36,7 +36,7 @@ find_package(lockfree_queue REQUIRED CONFIG
     PATHS /path/to/install/lib/cmake/lockfree_queue
 )
 ```
-### Don't forget to link got include path(even it is header only)
+### Don't forget to link it to get the include path
 
 ```cmake
 target_link_libraries(myapp INTERFACE lockfree_queue::lockfree_queue)
