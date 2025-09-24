@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.14)
 project(lockfree_queue
     VERSION 1.0.0
     DESCRIPTION "Lock-free queue used in audio mixer project"
@@ -13,7 +13,7 @@ target_include_directories(lockfree_queue
         $<INSTALL_INTERFACE:include>
 )
 
-target_compile_features(lockfree_queue INTERFACE cxx_std_23)
+target_compile_features(lockfree_queue INTERFACE cxx_std_20)
 
 include(CMakePackageConfigHelpers)
 
@@ -50,5 +50,6 @@ install(FILES
 option(build_tests "Build lockfree_queue tests" OFF)
 
 if(build_tests)
+    enable_testing()
     add_subdirectory(tests)
 endif()

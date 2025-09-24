@@ -23,7 +23,6 @@ TEST_CASE("Stress test: high contention to provoke ABA")
     std::atomic<int> produced{0};
     std::atomic<int> consumed{0};
 
-    // 用于检测重复/丢失：使用 mutex 保护的 unordered_set
     std::unordered_set<Id> seen;
     std::mutex seen_mtx;
 
