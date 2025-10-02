@@ -47,7 +47,7 @@ install(FILES
     DESTINATION lib/cmake/lockfree_queue
 )
 # optional : build test
-option(build_tests "Build lockfree_queue tests" OFF)
+option(BUILD_TESTING "Enable building tests" ON)
 
 if(build_tests)
     enable_testing()
