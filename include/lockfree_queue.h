@@ -59,7 +59,7 @@ namespace lockfree
                 head    (0),
                 tail    (0)
         {
-            for(auto i = 0; i < capacity; i++)
+            for(size_type i = 0; i < capacity; i++)
                 buffer[i].reset_seq(i);
         }
 
