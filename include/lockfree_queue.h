@@ -122,7 +122,7 @@ namespace lockfree
             while(true)
             {
                 size_type  current_head = head.load(std::memory_order_relaxed);
-                slot_type& current_slot = buffer[head & mask];
+                slot_type& current_slot = buffer[current_head & mask];
                 size_type  current_seq  = current_slot.seq.load(std::memory_order_acquire);
 
                 auto cmp = (std::intptr_t)current_seq <=> (std::intptr_t)current_head + 1;

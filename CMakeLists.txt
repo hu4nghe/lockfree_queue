@@ -49,7 +49,7 @@ install(FILES
 # optional : build test
 option(BUILD_TESTING "Enable building tests" ON)
 
-if(build_tests)
+if(BUILD_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif()

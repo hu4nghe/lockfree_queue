@@ -22,7 +22,7 @@ namespace lockfree
         // Reserve memory for value
         alignas(value_type) std::byte storage[sizeof(value_type)];
         // Value status flag
-        bool constructed;
+        std::atomic<bool> constructed;
 
     public:
         /**
