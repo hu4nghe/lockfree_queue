@@ -24,7 +24,7 @@ if(TARGET Catch2::Catch2WithMain)
     )
 endif()
 
-add_executable(ABA test_ABA.cpp)
+add_executable(ABA test_extreme.cpp)
 target_link_libraries(ABA
     PRIVATE
         lockfree_queue
