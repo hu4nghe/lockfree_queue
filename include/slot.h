@@ -23,7 +23,7 @@ namespace lockfree
 
         alignas(value_type) std::byte storage[sizeof(value_type)];
 
-        std::atomic<bool> constructed;
+        bool constructed;
 
         public:
 
@@ -56,7 +56,7 @@ namespace lockfree
         template <typename... Args> void construct(Args&&... args)
         {
             new (&storage) value_type(std::forward<Args>(args)...);
-            constructed.store(true, std::memory_order_release);
+            constructed = true;
         }
 
         /**
@@ -66,8 +66,11 @@ namespace lockfree
          */
         void destroy() noexcept
         {
-            if (constructed.exchange(false, std::memory_order_acq_rel))
+            if (constructed)
+            {
                 std::launder(reinterpret_cast<value_type*>(&storage))->~value_type();
+                constructed = false;
+            }
         }
 
         /**
