@@ -2,98 +2,111 @@
  * @file slot.h
  * @author HUANG He (hu4nghe@outlook.com)
  * @brief Base element of lockfree_queue
- * @version 1.0
- * @date 2025-09-23
- * 
- * @copyright Copyright (c) 2025
- * 
+ * @version 1.0.1
+ * @date 2026-01-11
+ *
+ * @copyright Copyright (c) 2026
+ *
  */
 #pragma once
 
 #include <atomic>
+#include <new>
 
 namespace lockfree
 {
-    template<class value_type>
-    struct alignas(64) slot
+    template <class value_type> struct alignas(64) slot
     {
         std::atomic<size_t> seq;
-    private:
-        // Reserve memory for value
+
+        private:
+
         alignas(value_type) std::byte storage[sizeof(value_type)];
-        // Value status flag
+
         std::atomic<bool> constructed;
 
-    public:
-        /**
-         * @brief Default constructor
-         * 
-         */
-        slot() noexcept : seq(0), constructed(false){}
+        public:
 
-        /// You don't want to move a slot in multithread queue. ///
+        /**
+         * @brief Default constructor.
+         *
+         */
+        slot() noexcept
+            : seq(0),
+              constructed(false)
+        {}
+
+        /* Impossible to copy or move a slot. */
         slot(const slot&)            = delete;
         slot(slot&&)                 = delete;
         slot& operator=(const slot&) = delete;
         slot& operator=(slot&&)      = delete;
 
         /**
-         * @brief Late construct the value_type object at push
-         * 
-         * @tparam Args Parameter pack type
-         * @param args Forwarding value
+         * @brief
+         *  Construct an item when it is pushed.
+         *
+         * @tparam Args
+         *  Parameter pack type.
+
+         * @param args
+         *  The forwarded item.
+         *
          */
-        template<typename... Args>
-        void construct(Args&&... args) 
+        template <typename... Args> void construct(Args&&... args)
         {
-            //Placement new with forwarding
             new (&storage) value_type(std::forward<Args>(args)...);
-            constructed = true;
+            constructed.store(true, std::memory_order_release);
         }
 
         /**
-         * @brief Destroy a element at pop
-         * 
+         * @brief
+         *  Destroy an item when it is poped.
+         *
          */
-        void destroy() noexcept 
+        void destroy() noexcept
         {
-            if (constructed) 
-            {
-                reinterpret_cast<value_type*>(&storage)->~value_type();
-                constructed = false;
-            }
+            if (constructed.exchange(false, std::memory_order_acq_rel))
+                std::launder(reinterpret_cast<value_type*>(&storage))->~value_type();
         }
-        
+
         /**
-         * @brief reset slot sequence number
-         * 
-         * @param new_seq new sequence number value
+         * @brief
+         *  Set the slot's sequence number.
+         *
+         * @param new_seq
+         *  The new sequence number.
+         *
          */
-        void reset_seq(size_t new_seq) noexcept 
+        void set_seq(size_t new_seq) noexcept
         {
             seq.store(new_seq, std::memory_order_release);
         }
 
         /**
-         * @brief get for write
-         * 
-         * @return value_type& Reference of stored value
+         * @brief
+         *  Get the item stored in the current slot.
+         *
+         * @return value_type&
+         *  A Reference of the stored item.
+         *
          */
-        auto get() noexcept -> value_type& 
-        { 
-            return *reinterpret_cast<value_type*>(&storage); 
-        }
-        
-        /**
-         * @brief Read only get
-         * 
-         * @return const value_type& const reference of stored value
-         */
-        auto get() const noexcept -> const value_type&
-        { 
-            return *reinterpret_cast<const value_type*>(&storage); 
+        auto get() noexcept -> value_type&
+        {
+            return *std::launder(reinterpret_cast<value_type*>(&storage));
         }
 
+        /**
+         * @brief
+         *  Read only version of get().
+         *
+         * @return const value_type&
+         *  A const reference of the stored item.
+         *
+         */
+        auto get() const noexcept -> const value_type&
+        {
+            return *std::launder(reinterpret_cast<const value_type*>(&storage));
+        }
     };
-}
- 
+} // namespace lockfree

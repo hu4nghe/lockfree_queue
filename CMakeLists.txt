@@ -13,7 +13,7 @@ target_include_directories(lockfree_queue
         $<INSTALL_INTERFACE:include>
 )
 
-target_compile_features(lockfree_queue INTERFACE cxx_std_20)
+target_compile_features(lockfree_queue INTERFACE cxx_std_23)
 
 include(CMakePackageConfigHelpers)
 
