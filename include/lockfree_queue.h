@@ -47,11 +47,11 @@ namespace lockfree
          * @note
          *  Capacity handling:
          *
-         *  The constructor parameter `requested` is only a hint.
+         *  The requeted capacity "size_t requested" is only a hint
          *  The real internal capacity is automatically adjusted to
          *  the smallest power of two that is grater than requested
          *  and is guaranteed to be at least 2 so the queue can use
-         *  bitwise masking instead of "&".
+         *  bitwise masking instead of "%".
          *
          *  Example:
          *  requested = 0 or 1  -> real capacity = 2
