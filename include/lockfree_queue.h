@@ -32,8 +32,8 @@ namespace lockfree
 
         std::vector<slot_type> buffer;
 
-        alignas(64) std::atomic<size_type> head;
-        alignas(64) std::atomic<size_type> tail;
+        alignas(destructive_interference) std::atomic<size_type> head;
+        alignas(destructive_interference) std::atomic<size_type> tail;
 
         public:
 

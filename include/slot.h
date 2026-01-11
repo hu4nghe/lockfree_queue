@@ -15,7 +15,9 @@
 
 namespace lockfree
 {
-    template <class value_type> struct alignas(64) slot
+    constexpr auto destructive_interference = std::hardware_destructive_interference_size;
+
+    template <class value_type> struct alignas(destructive_interference) slot
     {
         std::atomic<size_t> seq;
 
